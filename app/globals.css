@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+:root {
+  color-scheme: light;
+}
+html, body, #__next {
+  height: 100%;
+}
+body {
+  @apply bg-brandBg text-slate-900 font-sans antialiased;
+  line-height: 1.6;
+}
+.container {
+  @apply max-w-6xl mx-auto px-6;
+}
+.card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 30px rgba(16,24,40,0.06);
+  border: 1px solid rgba(15,23,42,0.04);
+}
+.input {
+  @apply w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-slate-900 shadow-sm;
+  transition: box-shadow .18s ease, border-color .12s ease;
+}
+.input:focus {
+  box-shadow: 0 6px 18px rgba(245,158,11,0.12);
+  border-color: #F59E0B;
+  outline: none;
+}
+
+/* input group + icon styles for a more professional form */
+.input-group { position: relative; display: flex; align-items: center; gap: 0.5rem; }
+.input-icon { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 0.5rem; background: #FFFAF0; color: #F59E0B; box-shadow: 0 6px 18px rgba(245,158,11,0.04); border: 1px solid rgba(15,23,42,0.03); }
+.input.with-icon { padding-left: 2.75rem; }
+.select-with-icon { appearance: none; padding-right: 2.25rem; }
+.logo-wrap { width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:8px; background: linear-gradient(180deg,#FFF6E0,#FFE7A3); box-shadow: 0 6px 20px rgba(245,158,11,0.06); }
+
+.small {
+  @apply text-sm text-slate-500;
+}
+.gauge-track {
+  stroke: rgba(15,23,42,0.08);
+}
+.gauge-fill {
+  stroke: #F59E0B;
+  stroke-linecap: round;
+}
+.button-primary {
+  background: linear-gradient(90deg,#F59E0B,#FFD54A);
+  color: #081026;
+  font-weight: 700;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(245,158,11,0.14);
+  border: none;
+}
+.header-brand {
+  display: flex; align-items: center; gap: 12px;
+}
+.header-badge {
+  background: linear-gradient(180deg,#FFF6E0,#FFE7A3); padding:6px 10px; border-radius:8px; font-weight:700; color:#081026; box-shadow: 0 6px 20px rgba(245,158,11,0.06);
+}
+/* wordmark: serif, strong weight and tighter tracking to resemble a classic news-style wordmark (Forbes-like) */
+.wordmark {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #081026;
+}
+/* responsive adjustments */
+@media (max-width: 640px) {
+  .wordmark { font-size: 1.125rem; /* ~text-lg */ }
+}

@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "routes": [
+    { "src": "/(.*)", "headers": { "x-frame-options": "DENY", "x-content-type-options": "nosniff" } }
+  ],
+  "redirects": [
+    { "source": "https://www.vigilfi.com/:path*", "destination": "https://vigilfi.com/:path*", "permanent": true }
+  ]
+}
