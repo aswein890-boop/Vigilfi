@@ -45,29 +45,62 @@ export function computeSurvivalMonths(inputs: Inputs, riskMultiplier = 1.0): num
 }
 
 function scoreEmergencyCoverage(months: number) {
-  // 0 months => 0, 3 months => 60, 6 months => 90, 12+ => 100
+  // Non-linear, conservative mapping with diminishing returns:
+  // 0 -> 0, 1 -> ~10, 3 -> 60, 6 -> 90, 12+ -> 100
   if (!isFinite(months)) return 100;
-  const v = months >= 12 ? 100 : Math.round((months / 12) * 100);
-  return clamp(v);
+  if (months <= 0) return 0;
+  if (months < 3) {
+    // 0..3 => 0..60
+    return clamp(Math.round((months / 3) * 60));
+  }
+  if (months < 6) {
+    // 3..6 => 60..90
+    return clamp(Math.round(60 + ((months - 3) / 3) * 30));
+  }
+  if (months < 12) {
+    // 6..12 => 90..100
+    return clamp(Math.round(90 + ((months - 6) / 6) * 10));
+  }
+  return 100;
 }
 
 function scoreDebtPressure(inputs: Inputs) {
-  const dti = (inputs.monthlyDebt / Math.max(1, inputs.monthlyIncome)) * 100; // percent
-  // lower DTI is better. 0% -> 100, 20% -> 80, 40% -> 50, 60% -> 20, 100% -> 0
-  if (dti <= 10) return 100;
-  if (dti >= 100) return 0;
-  const score = 100 - (dti * 1.1); // gentle decay
-  return clamp(Math.round(score));
+  const income = Math.max(0, inputs.monthlyIncome);
+  if (income === 0) {
+    // No income -> debt pressure is severe if there is any debt
+    return inputs.monthlyDebt > 0 ? 0 : 75;
+  }
+  const dti = (inputs.monthlyDebt / income) * 100; // percent
+  // Smooth monotonic mapping: 0% -> 100, 40% -> ~50, 80% -> ~0
+  const score = Math.round(clamp(100 - dti * 1.25));
+  return score;
 }
 
 function scoreSavingsRate(inputs: Inputs) {
-  // savings rate = (income - essentials - debt) / income
-  const disposable = Math.max(0, inputs.monthlyIncome - inputs.monthlyEssentials - inputs.monthlyDebt);
-  const rate = inputs.monthlyIncome > 0 ? disposable / inputs.monthlyIncome : 0;
-  // rate 0.0 -> 50, 0.2 -> 80, 0.4 -> 95, >=0.5 -> 100
-  if (rate >= 0.5) return 100;
-  if (rate <= 0) return 40;
-  return clamp(Math.round(50 + rate * 100));
+  const mandatory = Math.max(1, inputs.monthlyEssentials + inputs.monthlyDebt);
+  const bufferMonths = inputs.liquidSavings / mandatory;
+
+  // Buffer score (non-linear): 0->10, 1->30, 3->70, 6->90, 12->100
+  let bufferScore: number;
+  if (!isFinite(bufferMonths)) bufferScore = 100;
+  else if (bufferMonths <= 0) bufferScore = 10;
+  else if (bufferMonths < 1) bufferScore = Math.round(10 + bufferMonths * 20);
+  else if (bufferMonths < 3) bufferScore = Math.round(30 + ((bufferMonths - 1) / 2) * 40);
+  else if (bufferMonths < 6) bufferScore = Math.round(70 + ((bufferMonths - 3) / 3) * 20);
+  else if (bufferMonths < 12) bufferScore = Math.round(90 + ((bufferMonths - 6) / 6) * 10);
+  else bufferScore = 100;
+
+  // Momentum = monthly savings rate (disposable / income)
+  const disposable = Math.max(-Infinity, inputs.monthlyIncome - inputs.monthlyEssentials - inputs.monthlyDebt);
+  const momentumRate = inputs.monthlyIncome > 0 ? disposable / inputs.monthlyIncome : 0;
+  let momentumScore: number;
+  if (momentumRate <= 0) momentumScore = 0;
+  else if (momentumRate >= 0.5) momentumScore = 100;
+  else momentumScore = Math.round((momentumRate / 0.5) * 100);
+
+  // Weighted: buffer (65%) + momentum (35%)
+  const combined = Math.round(bufferScore * 0.65 + momentumScore * 0.35);
+  return clamp(combined);
 }
 
 function scoreIncomeStability(inputs: Inputs) {
@@ -84,21 +117,19 @@ function scoreIncomeStability(inputs: Inputs) {
 }
 
 function scoreCostRisk(inputs: Inputs) {
-  // cityIndex: 1 baseline, >1 more expensive => penalty
   const idx = inputs.cityIndex ?? 1.0;
-  // 1.0 -> 90, 1.5 -> 60, 2.0 -> 30
-  const score = Math.round(100 - (idx - 1) * 70);
-  return clamp(score);
+  // 1.0 => 100, 1.5 => ~70, 2.0 => ~40 (linear penalty above baseline)
+  const score = Math.round(clamp(100 - (idx - 1) * 60));
+  return score;
 }
 
 function scoreDependents(inputs: Inputs) {
   const d = Math.max(0, inputs.dependents ?? 0);
-  // 0 dependents -> 100, 1 -> 85, 2 -> 70, 3 -> 50, 4+ -> 30
   if (d === 0) return 100;
-  if (d === 1) return 85;
-  if (d === 2) return 70;
-  if (d === 3) return 50;
-  return 30;
+  if (d === 1) return 90;
+  if (d === 2) return 75;
+  if (d === 3) return 60;
+  return 40;
 }
 
 export function computeResilienceScore(inputs: Inputs, riskMultiplier = 1.0): ScoreResult {
@@ -113,11 +144,11 @@ export function computeResilienceScore(inputs: Inputs, riskMultiplier = 1.0): Sc
   const costRisk = scoreCostRisk(inputs);
   const dependentsImpact = scoreDependents(inputs);
 
-  // Weighted composition
+  // Weighted composition (debtPressure is a "goodness" score so used directly)
   const score = clamp(
     Math.round(
       emergencyCoverage * 0.4 +
-        (100 - debtPressure) * 0.2 +
+        debtPressure * 0.2 +
         savingsHealth * 0.15 +
         incomeStability * 0.1 +
         costRisk * 0.1 +
