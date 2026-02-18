@@ -30,6 +30,21 @@ const nextConfig = {
       }
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: '/:path((?!.*))',
+        has: [
+          {
+            type: 'host',
+            value: 'www.vigilfi.com'
+          }
+        ],
+        destination: 'https://vigilfi.com/:path*',
+        permanent: true
+      }
+    ];
+  },
   compress: true,
   poweredByHeader: false
 };

@@ -1,16 +1,3 @@
 {
-  "version": 2,
-  "redirects": [
-    {
-      "source": "/(.*)?",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.vigilfi.com"
-        }
-      ],
-      "destination": "https://vigilfi.com/:path*",
-      "permanent": true
-    }
-  ]
+  "version": 2
 }
