@@ -1,17 +1,10 @@
 'use client';
 import React from 'react';
+import { Inputs } from '../../lib/score';
 
 type Props = {
-  values: {
-    monthlyIncome: number;
-    monthlyEssentials: number;
-    monthlyDebt: number;
-    liquidSavings: number;
-    cityIndex: number;
-    dependents: number;
-    jobStability: string;
-  };
-  onChange: (next: any) => void;
+  values: Inputs;
+  onChange: React.Dispatch<React.SetStateAction<Inputs>>;
 };
 
 export default function InputForm({ values, onChange }: Props) {
@@ -154,7 +147,7 @@ export default function InputForm({ values, onChange }: Props) {
               aria-label="Job stability"
               className="input mt-0 select-with-icon"
               value={values.jobStability}
-              onChange={(e) => onChange({ ...values, jobStability: e.target.value })}
+              onChange={(e) => onChange({ ...values, jobStability: e.target.value as Inputs['jobStability'] })}
             >
               <option value="stable">Stable</option>
               <option value="variable">Variable</option>

@@ -50,47 +50,47 @@ export default function Report({ inputs, result }: { inputs: Inputs; result: Sco
             <thead>
               <tr style={{ textAlign: 'left', color: '#9aa6b2' }}>
                 <th style={{ padding: '6px 0' }}>Component</th>
-                <th style={{ padding: '6px 0' }}>Value</th>
+                <th style={{ padding: '6px 0' }}>Metric (raw)</th>
+                <th style={{ padding: '6px 0' }}>Sub-score (0–100)</th>
                 <th style={{ padding: '6px 0' }}>Weight</th>
-                <th style={{ padding: '6px 0' }}>Contribution</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td style={{ padding: '8px 0' }}>Emergency coverage</td>
-                <td style={{ padding: '8px 0' }}>{result.breakdown.emergencyCoverage} months</td>
+                <td style={{ padding: '8px 0' }}>{result.survivalMonths} months</td>
+                <td style={{ padding: '8px 0' }}>{result.breakdown.emergencyCoverage}</td>
                 <td style={{ padding: '8px 0' }}>40%</td>
-                <td style={{ padding: '8px 0' }}>{Math.round(result.breakdown.emergencyCoverage * 0.4 * 10) / 10} pts</td>
               </tr>
               <tr>
                 <td style={{ padding: '8px 0' }}>Debt pressure</td>
-                <td style={{ padding: '8px 0' }}>{result.breakdown.debtPressure}% of income</td>
+                <td style={{ padding: '8px 0' }}>{Math.round((inputs.monthlyDebt / Math.max(1, inputs.monthlyIncome)) * 100)}% of income</td>
+                <td style={{ padding: '8px 0' }}>{result.breakdown.debtPressure}</td>
                 <td style={{ padding: '8px 0' }}>20%</td>
-                <td style={{ padding: '8px 0' }}>{Math.round((100 - result.breakdown.debtPressure) * 0.2 * 10) / 10} pts</td>
               </tr>
               <tr>
                 <td style={{ padding: '8px 0' }}>Savings health</td>
+                <td style={{ padding: '8px 0' }}>{Math.round(((inputs.monthlyIncome - inputs.monthlyEssentials - inputs.monthlyDebt) / Math.max(1, inputs.monthlyIncome)) * 100)}% save rate</td>
                 <td style={{ padding: '8px 0' }}>{result.breakdown.savingsHealth}</td>
                 <td style={{ padding: '8px 0' }}>15%</td>
-                <td style={{ padding: '8px 0' }}>{Math.round(result.breakdown.savingsHealth * 0.15 * 10) / 10} pts</td>
               </tr>
               <tr>
                 <td style={{ padding: '8px 0' }}>Income stability</td>
+                <td style={{ padding: '8px 0' }}>{inputs.jobStability}</td>
                 <td style={{ padding: '8px 0' }}>{result.breakdown.incomeStability}</td>
                 <td style={{ padding: '8px 0' }}>10%</td>
-                <td style={{ padding: '8px 0' }}>{Math.round(result.breakdown.incomeStability * 0.1 * 10) / 10} pts</td>
               </tr>
               <tr>
                 <td style={{ padding: '8px 0' }}>Location cost risk</td>
+                <td style={{ padding: '8px 0' }}>{(inputs.cityIndex ?? 1).toFixed(2)}</td>
                 <td style={{ padding: '8px 0' }}>{result.breakdown.costRisk}</td>
                 <td style={{ padding: '8px 0' }}>10%</td>
-                <td style={{ padding: '8px 0' }}>{Math.round(result.breakdown.costRisk * 0.1 * 10) / 10} pts</td>
               </tr>
               <tr>
                 <td style={{ padding: '8px 0' }}>Dependents impact</td>
+                <td style={{ padding: '8px 0' }}>{inputs.dependents ?? 0}</td>
                 <td style={{ padding: '8px 0' }}>{result.breakdown.dependentsImpact}</td>
                 <td style={{ padding: '8px 0' }}>5%</td>
-                <td style={{ padding: '8px 0' }}>{Math.round(result.breakdown.dependentsImpact * 0.05 * 10) / 10} pts</td>
               </tr>
             </tbody>
           </table>

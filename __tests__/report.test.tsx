@@ -18,5 +18,7 @@ describe('Report component', () => {
     expect(screen.getByText(/Financial Resilience Report/i)).toBeDefined();
     expect(screen.getByText(/4\s*months/i)).toBeDefined();
     expect(screen.getByText(/Increase savings/i)).toBeDefined();
+    // printable report and UI should not show legacy "points/pts" — we use visual sub-scores instead
+    expect(screen.queryByText(/pts|points/i)).toBeNull();
   });
 });

@@ -108,7 +108,7 @@ export default function Page() {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8" id="calculator">
       {/* Main calculation section */}
       <section className="lg:col-span-2 space-y-6">
-        <InputForm values={values} onChange={setValues} />
+        <InputForm values={values} onChange={(next) => setValues(next)} />
 
         {/* Score display panel */}
         <div className="card flex flex-col md:flex-row items-center gap-6">

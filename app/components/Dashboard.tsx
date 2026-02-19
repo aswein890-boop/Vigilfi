@@ -32,6 +32,15 @@ export function Dashboard() {
     { month: "Jun", netIncome: 5300, spending: 3100 },
   ];
 
+  const formatNumericValue = (value: any) => {
+    let v: any = value;
+    if (Array.isArray(v)) v = v[0];
+    if (v == null) return 0;
+    if (typeof v === "number") return v;
+    const parsed = Number(v);
+    return Number.isNaN(parsed) ? 0 : parsed;
+  };
+
   return (
     <div className="p-8">
       <div className="mb-8">
@@ -41,48 +50,48 @@ export function Dashboard() {
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="card p-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-500">LIQUID RUNWAY</span>
+            <span className="text-sm font-medium text-slate-500">LIQUID RUNWAY</span>
             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
           </div>
           <div className="text-2xl font-bold text-green-600">
             {metrics.liquidRunway.toFixed(1)} Months
           </div>
-          <div className="text-sm text-gray-500 mt-1">Time until $0 balance</div>
+          <div className="text-sm text-slate-400 mt-1">Time until $0 balance</div>
         </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="card p-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-500">MONTHLY FREE CASH</span>
+            <span className="text-sm font-medium text-slate-500">MONTHLY FREE CASH</span>
             <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
           </div>
           <div className="text-2xl font-bold text-gray-900">
             ${metrics.monthlyFreeCash.toLocaleString()}
           </div>
-          <div className="text-sm text-gray-500 mt-1">Discretionary Income</div>
+          <div className="text-sm text-slate-400 mt-1">Discretionary Income</div>
         </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="card p-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-500">MONTHLY BURN</span>
+            <span className="text-sm font-medium text-slate-500">MONTHLY BURN</span>
             <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
           </div>
           <div className="text-2xl font-bold text-gray-900">
             ${metrics.monthlyBurn.toLocaleString()}
           </div>
-          <div className="text-sm text-gray-500 mt-1">Mandatory Survival Cost</div>
+          <div className="text-sm text-slate-400 mt-1">Mandatory Survival Cost</div>
         </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="card p-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-500">EFFECTIVE TAX RATE</span>
+            <span className="text-sm font-medium text-slate-500">EFFECTIVE TAX RATE</span>
             <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
           </div>
           <div className="text-2xl font-bold text-gray-900">
             {metrics.effectiveTaxRate.toFixed(1)}%
           </div>
-          <div className="text-sm text-gray-500 mt-1">${metrics.annualTax.toLocaleString()} Annual Tax</div>
+          <div className="text-sm text-slate-400 mt-1">${metrics.annualTax.toLocaleString()} Annual Tax</div>
         </div>
       </div>
 
@@ -106,7 +115,7 @@ export function Dashboard() {
                 tickFormatter={(value) => `$${(value / 1000).toFixed(1)}k`}
               />
               <Tooltip 
-                formatter={(value: number | undefined) => [`$${value?.toLocaleString() || 0}`, "Balance"]}
+                formatter={(value: any) => [`$${formatNumericValue(value).toLocaleString()}`, "Balance"]}
                 labelFormatter={(label) => `Month ${label}`}
               />
               <Line 
@@ -137,7 +146,7 @@ export function Dashboard() {
                 tickFormatter={(value) => `$${(value / 1000).toFixed(1)}k`}
               />
               <Tooltip 
-                formatter={(value: number | undefined) => [`$${value?.toLocaleString() || 0}`, ""]}
+                formatter={(value: any) => [`$${formatNumericValue(value).toLocaleString()}`, ""]}
               />
               <Line 
                 type="monotone" 

@@ -1,6 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
 :root {
   color-scheme: light;
+  --glass: rgba(255,255,255,0.6);
+  --muted: #6b7280;
+  --brand: 0 122 255;
+  --accent: 56 189 248; /* sky-400 */
+  --surface-elev: 0 10px 30px rgba(2,6,23,0.08);
 }
 html, body, #__next {
   height: 100%;
@@ -29,12 +34,20 @@ body {
   outline: none;
 }
 
+/* utility buttons & KPIs */
+.btn { @apply inline-flex items-center gap-2 px-4 py-2 rounded-md font-semibold shadow-sm; }
+.btn-primary { @apply bg-slate-900 text-white hover:bg-slate-800 }
+.kpi { @apply text-sm font-medium text-slate-500 }
+.kpi-value { @apply text-2xl font-bold text-slate-900 }
+.small-muted { @apply text-sm text-slate-400 }
+.header-hero { @apply bg-gradient-to-r from-slate-50 via-white to-slate-50 border-b border-slate-100 }
+
 /* input group + icon styles for a more professional form */
 .input-group { position: relative; display: flex; align-items: center; gap: 0.5rem; }
 .input-icon { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 0.5rem; background: #FFFAF0; color: #F59E0B; box-shadow: 0 6px 18px rgba(245,158,11,0.04); border: 1px solid rgba(15,23,42,0.03); }
 .input.with-icon { padding-left: 2.75rem; }
 .select-with-icon { appearance: none; padding-right: 2.25rem; }
-.logo-wrap { width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:8px; background: linear-gradient(180deg,#FFF6E0,#FFE7A3); box-shadow: 0 6px 20px rgba(245,158,11,0.06); }
+.
 
 .small {
   @apply text-sm text-slate-500;
